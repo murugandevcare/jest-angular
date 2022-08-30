@@ -2,7 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { of, throwError } from 'rxjs';
 import { FakeService } from './fake.service';
 
-describe('FakeService', () => {
+xdescribe('FakeService', () => {
   let service: FakeService;
   let httpClientSpy: any;
 

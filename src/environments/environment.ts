@@ -4,10 +4,7 @@
 
 export const environment = {
   production: false,
-  // https://www.mediawiki.org/wiki/API:Main_page
-  wiki: {
-    api: 'https://en.wikipedia.org/w/api.php',
-  },
+	baseUrl: 'http://localhost:8081',
 };
 
 /*
