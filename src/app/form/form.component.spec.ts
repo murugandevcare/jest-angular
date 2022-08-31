@@ -1,25 +1,40 @@
+import { HttpClientModule } from '@angular/common/http';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { of } from 'rxjs';
+import { AuthService } from '../service/auth.service';
 
 import { FormComponent } from './form.component';
 
+let fixture: ComponentFixture<FormComponent>,
+  app: FormComponent,
+  DOM: HTMLElement,
+  authServiceMock: any;
 describe('FormComponent', () => {
-  let component: FormComponent;
-  let mockFormBuilder: FormBuilder;
-  let authServiceMock: any;
-  beforeEach(() => {
-    mockFormBuilder = new FormBuilder();
-    authServiceMock = {
-			login: jest.fn()
-		};
-    component = new FormComponent(mockFormBuilder,authServiceMock);
-    component.ngOnInit();
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
+      imports: [
+        ReactiveFormsModule, FormsModule, HttpClientModule
+      ],
+      declarations: [
+        FormComponent
+      ],
+      providers: [
+        FormBuilder,
+        {provider:AuthService}
+      ]
+    }).compileComponents();
+    fixture = TestBed.createComponent(FormComponent); // test ready
+    TestBed.inject(FormBuilder);
+    authServiceMock = TestBed.inject(AuthService);
+    app = fixture.componentInstance; // instance
+    DOM = fixture.nativeElement; // DOM
+    fixture.detectChanges();
     window.alert = jest.fn();
   });
 
   it('should create', () => {
-    expect(component).toBeTruthy();
+    expect(app).toBeTruthy();
   });
 
   describe('Test ngOnInit', () => {
@@ -28,26 +43,26 @@ describe('FormComponent', () => {
         "email": "",
         "password": ""
       }
-      expect(component.loginForm.value).toEqual(loginForm)
+      expect(app.loginForm.value).toEqual(loginForm)
     })
   })
 
-  describe('Test loginForm', ()=> {
+  describe('Test loginForm', () => {
     it('Test login form with invalid data', () => {
-      component.loginForm.controls['email'].setValue('');
-      component.loginForm.controls['password'].setValue('');
-      expect(component.loginForm.valid).toBeFalsy();
+      app.loginForm.controls['email'].setValue('');
+      app.loginForm.controls['password'].setValue('');
+      expect(app.loginForm.valid).toBeFalsy();
     })
 
     it('Test login form with valid data', () => {
-      component.loginForm.controls['email'].setValue('murugan@devcare.biz');
-      component.loginForm.controls['password'].setValue('9751501688');
-      expect(component.loginForm.valid).toBeTruthy();
+      app.loginForm.controls['email'].setValue('murugan@devcare.biz');
+      app.loginForm.controls['password'].setValue('9751501688');
+      expect(app.loginForm.valid).toBeTruthy();
     })
   })
 
   describe('Test login', () => {
-    it('Test success login', ()=> {
+    it('Test success login', () => {
       const loginForm = {
         "email": "murugan@devcare.biz",
         "password": "9751501688"
@@ -55,14 +70,14 @@ describe('FormComponent', () => {
       const reponse = {
         "code": 200,
         "data": {
-          "token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJJZCI6MSwiZmlyc3ROYW1lIjoiTXVydWdhbiIsImxhc3ROYW1lIjoiTSIsImVtYWlsIjoibXVydWdhbkBkZXZjYXJlLmJpeiIsInBob25lIjo5NzUxNTAxNjg4LCJyb2xlIjoiQURNSU4ifSwiaWF0IjoxNjYxODUyMjE4LCJleHAiOjE2NjE4NTU4MTh9.AI13i4w8PPzSW6OXev-I5ws88_Jgc7e8hrkMyaN0rWA"
+          "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7InVzZXJJZCI6MSwiZmlyc3ROYW1lIjoiTXVydWdhbiIsImxhc3ROYW1lIjoiTSIsImVtYWlsIjoibXVydWdhbkBkZXZjYXJlLmJpeiIsInBob25lIjo5NzUxNTAxNjg4LCJyb2xlIjoiQURNSU4ifSwiaWF0IjoxNjYxODUyMjE4LCJleHAiOjE2NjE4NTU4MTh9.AI13i4w8PPzSW6OXev-I5ws88_Jgc7e8hrkMyaN0rWA"
         }
       }
-      component.loginForm.setValue(loginForm);
+      app.loginForm.setValue(loginForm);
       const spyloginUser = jest.spyOn(authServiceMock, 'login').mockReturnValue(of(reponse));
-      component.login(loginForm);
-			expect(spyloginUser).toHaveBeenCalledWith(loginForm);
-      expect(component.isLoggedIn).toBeTruthy();
+      app.login(loginForm);
+      expect(spyloginUser).toHaveBeenCalledWith(loginForm);
+      expect(app.isLoggedIn).toBeTruthy();
     })
 
     // it('Test failed login', ()=> {
@@ -73,8 +88,8 @@ describe('FormComponent', () => {
     //   component.loginForm.setValue(loginForm);
     //  // const spyloginUser = jest.spyOn(authServiceMock, 'login').mockReturnValue(of(reponse));
     //   component.login(loginForm);
-		// 	expect(authServiceMock.login).not.toHaveBeenCalledWith(loginForm);
+    // 	expect(authServiceMock.login).not.toHaveBeenCalledWith(loginForm);
     //   expect(component.isLoggedIn).toBeFalsy();
     // })
   })
-});
+})
