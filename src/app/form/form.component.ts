@@ -27,8 +27,14 @@ export class FormComponent implements OnInit {
     if(this.loginForm.valid){
      this.auth.login(value).subscribe({
       next: (data)=> {
+        if(data.code === 200){
           this.isLoggedIn = true;
           alert('Login successful.');
+          this.initialSetup();
+        }else{
+          this.isLoggedIn = false;
+        }
+          
       },
       error: (err) => {
         this.isLoggedIn = false;

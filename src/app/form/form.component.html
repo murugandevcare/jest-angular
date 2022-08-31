@@ -9,4 +9,4 @@
         <input type="password" formControlName="password" />
     </div>
 </form>
-<button type="submit" (click)="login(loginForm.value)">login</button>
+<button type="submit" (click)="login(loginForm.value)" id="login-btn" [disabled]="!loginForm.valid">login</button>
