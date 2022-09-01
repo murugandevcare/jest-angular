@@ -25,32 +25,34 @@ export class AuthService {
 
 	isLoggedIn(): boolean {
 		try {
-      let currentUser = localStorage.getItem('currentUser');
-			const theUser: any = JSON.parse( currentUser !== null ? currentUser: " ");
-			if (theUser) {
-				this.currentUser = theUser.user;
+			let currentUser = localStorage.getItem('token');
+			if (currentUser !== null) {
+				return true
+			}
+			else {
+				return false
 			}
 		} catch (e) {
 			return false;
 		}
-		return !!this.currentUser;
 	}
 
 	login(oUser: any): Observable<any> {
-		return this.http.post(`${environment.baseUrl}/api/auth/login`, JSON.stringify(oUser), this.buildHeader()).pipe(
-			tap((response: any) => {
-				if (response.success) {
-					this.currentUser = response.message as any;
-					const userObj: any = {};
-					userObj.user = response.message;
-					userObj.token = response.token;
+		return this.http.post(`${environment.baseUrl}/api/auth/login`,JSON.stringify(oUser))
+		// .pipe(
+		// 	tap((response: any) => {
+		// 		if (response.success) {
+		// 			this.currentUser = response.message as any;
+		// 			const userObj: any = {};
+		// 			userObj.user = response.message;
+		// 			userObj.token = response.token;
 
-					localStorage.setItem('currentUser', JSON.stringify(userObj));
-				}
-			}),
-			retry(3),
-			catchError(this.handleError)
-		);
+		// 			localStorage.setItem('currentUser', JSON.stringify(userObj));
+		// 		}
+		// 	}),
+		// 	retry(3),
+		// 	catchError(this.handleError)
+		// );
 	}
 
 	logout(): void {
@@ -66,7 +68,7 @@ export class AuthService {
 			errorMessage = `Server returned code: ${err.status}, error message is: ${err.message}`;
 		}
 		console.error(errorMessage);
-		return throwError(errorMessage);
+		return throwError(() => new Error(errorMessage));
 	}
 
 }
